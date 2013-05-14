@@ -39,7 +39,7 @@ if sys.version_info < (2,6):
 
 
 import distutils
-from distutils.core import setup, Command
+from setuptools import setup, Command
 from distutils.ccompiler import get_default_compiler
 from distutils.extension import Extension
 from distutils.errors import CompileError, LinkError

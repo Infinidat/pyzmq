@@ -194,7 +194,7 @@ except Exception as e:
     raise ImportError("PyZMQ CFFI backend couldn't find zeromq: %s\n"
     "Please check that you have zeromq headers and libraries." % e)
 
-if _version_info >= (3,2,2):
+if _version_info >= (3,2,3):
     functions = ''.join([constants,
                          core_functions,
                          core32_functions,
@@ -203,7 +203,7 @@ if _version_info >= (3,2,2):
                          polling_functions,
                          extra_functions])
 else:
-    raise ImportError("PyZMQ CFFI backend requires zeromq >= 3.2.2,"
+    raise ImportError("PyZMQ CFFI backend requires zeromq >= 3.2.3,"
         " but found %i.%i.%i" % _version_info
     )
 

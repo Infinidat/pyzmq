@@ -37,7 +37,7 @@ pjoin = os.path.join
 # Constants
 #-----------------------------------------------------------------------------
 
-bundled_version = (3,2,2)
+bundled_version = (3,2,3)
 libzmq = "zeromq-%i.%i.%i.tar.gz" % (bundled_version)
 libzmq_url = "http://download.zeromq.org/" + libzmq
 # util no longer used
@@ -90,11 +90,11 @@ def fetch_libzmq(savedir):
 
 def stage_platform_hpp(zmqroot):
     """stage platform.hpp into libzmq sources
-    
+
     Tries ./configure first (except on Windows),
     then falls back on included platform.hpp previously generated.
     """
-    
+
     platform_hpp = pjoin(zmqroot, 'src', 'platform.hpp')
     if os.path.exists(platform_hpp):
         info("already have platform.hpp")
@@ -104,7 +104,7 @@ def stage_platform_hpp(zmqroot):
         platform_dir = pjoin(zmqroot, 'builds', 'msvc')
     else:
         info("attempting ./configure to generate platform.hpp")
-        
+
         p = Popen('./configure', cwd=zmqroot, shell=True,
             stdout=PIPE, stderr=PIPE,
         )
@@ -121,7 +121,7 @@ def stage_platform_hpp(zmqroot):
                 platform_dir = pjoin(HERE, 'include_linux')
         else:
             return
-    
+
     info("staging platform.hpp from: %s" % platform_dir)
     shutil.copy(pjoin(platform_dir, 'platform.hpp'), platform_hpp)
 
@@ -135,7 +135,7 @@ def fetch_uuid(savedir):
     if os.path.exists(dest):
         info("already have %s" % dest)
         return
-    
+
     fname = fetch_archive(savedir, util_url, util)
     tf = tarfile.open(fname)
     util_name = untgz(util)
@@ -150,20 +150,20 @@ def fetch_uuid(savedir):
         shutil.rmtree(dest)
     shutil.move(pjoin(savedir, util_name, 'libuuid', 'src'), dest)
     shutil.rmtree(pjoin(savedir, util_name))
-    
+
     patch_uuid(dest)
 
 
 def patch_uuid(uuid_dir):
     """patch uuid.h with a few defines
-    
+
     from pyzmq-static
     """
     info("patching gen_uuid.c")
     gen_uuid = pjoin(uuid_dir, "gen_uuid.c")
     with open(gen_uuid) as f:
         lines = f.readlines()
-    
+
     if 'pyzmq-patch' in lines[0]:
         info("already patched")
         return
@@ -175,12 +175,12 @@ def patch_uuid(uuid_dir):
 
     with open(gen_uuid, 'w') as f:
         f.writelines(lines)
-    
+
 
 
 def copy_and_patch_libzmq(ZMQ, libzmq):
     """copy libzmq into source dir, and patch it if necessary.
-    
+
     This command is necessary prior to running a bdist on Linux or OS X.
     """
     if sys.platform.startswith('win'):
@@ -200,7 +200,7 @@ def copy_and_patch_libzmq(ZMQ, libzmq):
             fatal("Could not copy libzmq into zmq/, which is necessary for bdist. "
             "Please specify zmq prefix via `setup.py configure --zmq=/path/to/zmq` "
             "or copy libzmq into zmq/ manually.")
-    
+
     if sys.platform == 'darwin':
         # chmod u+w on the lib,
         # which can be user-read-only for some reason
@@ -215,4 +215,4 @@ def copy_and_patch_libzmq(ZMQ, libzmq):
         out,err = p.communicate()
         if p.returncode:
             fatal("Could not patch bundled libzmq install_name: %s"%err, p.returncode)
-        
+
